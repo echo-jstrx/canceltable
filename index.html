@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+    <style>
+        /* Basic styles for the modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <table id="PendingApp">
+        <thead>
+            <tr>
+                <th><input type="checkbox" id="selectAll"></th>
+                <th>SKU</th>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Example rows -->
+            <tr>
+                <td><input type="checkbox" class="selectRow"></td>
+                <td>12345</td>
+                <td>Product 1</td>
+                <td>$10.00</td>
+                <td>In Stock</td>
+                <td><button class="deleteRow">Delete</button></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" class="selectRow"></td>
+                <td>67890</td>
+                <td>Product 2</td>
+                <td>$20.00</td>
+                <td>Out of Stock</td>
+                <td><button class="deleteRow">Delete</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button id="deleteSelected">Delete Selected</button>
+
+    <!-- Modal for confirmation -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Are you sure you want to delete the selected items?</p>
+            <button id="confirmDelete">Delete</button>
+            <button id="cancelDelete">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Select all checkboxes
+        document.getElementById('selectAll').addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('.selectRow');
+            checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+        });
+
+        // Delete selected rows with confirmation
+        document.getElementById('deleteSelected').addEventListener('click', function() {
+            const modal = document.getElementById('confirmationModal');
+            modal.style.display = 'block';
+            
+            document.getElementById('confirmDelete').onclick = function() {
+                const checkboxes = document.querySelectorAll('.selectRow:checked');
+                checkboxes.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    row.parentNode.removeChild(row);
+                    // Add code here to remove the item from the database
+                });
+                modal.style.display = 'none';
+            };
+            
+            document.getElementById('cancelDelete').onclick = function() {
+                modal.style.display = 'none';
+            };
+        });
+
+        // Delete individual row with confirmation
+        document.querySelectorAll('.deleteRow').forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = document.getElementById('confirmationModal');
+                modal.style.display = 'block';
+                const row = this.closest('tr');
+                
+                document.getElementById('confirmDelete').onclick = function() {
+                    row.parentNode.removeChild(row);
+                    // Add code here to remove the item from the database
+                    modal.style.display = 'none';
+                };
+                
+                document.getElementById('cancelDelete').onclick = function() {
+                    modal.style.display = 'none';
+                };
+            });
+        });
+
+        // Close modal when the user clicks on <span> (x)
+        document.querySelector('.close').onclick = function() {
+            document.getElementById('confirmationModal').style.display = 'none';
+        }
+
+        // Close modal if user clicks anywhere outside of the modal
+        window.onclick = function(event) {
+            const modal = document.getElementById('confirmationModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
